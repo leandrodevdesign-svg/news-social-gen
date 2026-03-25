@@ -139,6 +139,12 @@ app.post('/api/process-news', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+// Exportamos la app para que Vercel pueda consumirla como Serverless Function
+module.exports = app;
+
+// Solo iniciar el servidor web normal si estamos en local (no en Vercel)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}
