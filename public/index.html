@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Transformer AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #f43f5e;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            min-height: 120px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 3rem;
+            display: none;
+        }
+
+        .result-section {
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .result-header h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: #e2e8f0;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .content-box {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .slides-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .slide-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            font-size: 3rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .circles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .circles div {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+            border-radius: 50%;
+        }
+
+        @keyframes animate {
+            0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+
+        /* Ambient background glow */
+        .glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <div class="circles">
+        <div style="left: 25%; width: 80px; height: 80px; animation-delay: 0s;"></div>
+        <div style="left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s;"></div>
+        <div style="left: 70%; width: 120px; height: 120px; animation-delay: 4s;"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>News Transformer</h1>
+            <p>Convierte noticias en contenido viral para redes sociales</p>
+        </div>
+
+        <div class="card">
+            <div class="input-group">
+                <label for="urls">Enlaces de noticias (uno por línea)</label>
+                <textarea id="urls" placeholder="https://ejemplo.com/noticia-1&#10;https://ejemplo.com/noticia-2"></textarea>
+            </div>
+            
+            <button id="processBtn" class="btn">
+                <span>Procesar con AI</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg>
+            </button>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+            </div>
+
+            <div id="results" class="results">
+                <div class="result-section">
+                    <div class="result-header">
+                        <h3>Post de LinkedIn</h3>
+                        <button class="copy-btn" onclick="copyText('linkedinBody')">Copiar</button>
+                    </div>
+                    <div id="linkedinBody" class="content-box"></div>
+                </div>
+
+                <div class="result-section">
+                    <div class="result-header">
+                        <h3>Slides para Instagram</h3>
+                        <button class="copy-btn" onclick="copySlides()">Copiar todas</button>
+                    </div>
+                    <div id="slidesContainer" class="slides-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const processBtn = document.getElementById('processBtn');
+        const urlsInput = document.getElementById('urls');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const linkedinBody = document.getElementById('linkedinBody');
+        const slidesContainer = document.getElementById('slidesContainer');
+
+        processBtn.addEventListener('click', async () => {
+            const urls = urlsInput.value.split('\n').map(u => u.trim()).filter(u => u !== '');
+            
+            if (urls.length === 0) {
+                alert('Por favor, ingresa al menos un enlace.');
+                return;
+            }
+
+            processBtn.disabled = true;
+            loading.style.display = 'flex';
+            results.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/process-news', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResults(data);
+                } else {
+                    alert('Error: ' + (data.error || 'Ocurrió un problema.'));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error al conectar con el servidor.');
+            } finally {
+                processBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayResults(data) {
+            linkedinBody.textContent = data.linkedinPost;
+            
+            slidesContainer.innerHTML = '';
+            data.instagramSlides.forEach((slide, index) => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'slide-card';
+                slideDiv.innerHTML = `
+                    <div class="slide-number">${index + 1}</div>
+                    <p>${slide.replace(/^Slide \d+: /, '')}</p>
+                `;
+                slidesContainer.appendChild(slideDiv);
+            });
+
+            results.style.display = 'block';
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyText(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text);
+            alert('Copiado al portapapeles!');
+        }
+
+        function copySlides() {
+            const slides = Array.from(slidesContainer.querySelectorAll('p')).map((p, i) => `Slide ${i+1}: ${p.textContent}`).join('\n\n');
+            navigator.clipboard.writeText(slides);
+            alert('Todas las slides copiadas!');
+        }
+    </script>
+</body>
+</html>
