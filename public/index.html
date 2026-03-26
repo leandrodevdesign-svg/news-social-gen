@@ -315,7 +315,10 @@
                 <div class="result-section">
                     <div class="result-header">
                         <h3>Slides para Instagram</h3>
-                        <button class="copy-btn" onclick="copySlides()">Copiar todas</button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="copy-btn" onclick="copySlides()">Copiar todas</button>
+                            <button class="copy-btn" onclick="downloadCSV()">Descargar CSV</button>
+                        </div>
                     </div>
                     <div id="slidesContainer" class="slides-container"></div>
                 </div>
@@ -394,6 +397,27 @@
             const slides = Array.from(slidesContainer.querySelectorAll('p')).map((p, i) => `Slide ${i+1}: ${p.textContent}`).join('\n\n');
             navigator.clipboard.writeText(slides);
             alert('Todas las slides copiadas!');
+        }
+
+        function downloadCSV() {
+            const pTags = Array.from(slidesContainer.querySelectorAll('p'));
+            if (pTags.length === 0) return;
+            
+            let csvContent = "Slide,Texto\n";
+            pTags.forEach((p, i) => {
+                const text = p.textContent.replace(/"/g, '""');
+                csvContent += `"${i+1}","${text}"\n`;
+            });
+            
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'slides_instagram.csv');
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>

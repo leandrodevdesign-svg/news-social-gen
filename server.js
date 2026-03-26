@@ -60,7 +60,7 @@ app.post('/api/process-news', async (req, res) => {
             ${validArticles.map((a, i) => `Article ${i+1}: ${a.title}\nContent: ${a.content}`).join('\n\n')}
             
             Based on this information, please provide:
-            1. A highly engaging LinkedIn post. It should be professional yet punchy, using emojis and relevant hashtags.
+            1. A highly engaging LinkedIn post. It should be concise and short (under 100 words), professional yet punchy, using emojis and relevant hashtags.
             2. A sequence of 5 to 10 short texts for Instagram slides. Each slide should be concise and visual-ready. Format them as "Slide 1: [Text]", "Slide 2: [Text]", etc.
             
             Format your response as a JSON object with the following keys:
